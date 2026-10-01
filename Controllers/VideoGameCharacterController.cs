@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
+using VideoGameCharacterApi.DTOs;
 using VideoGameCharacterApi.Services;
 
 namespace VideoGameCharacterApi.Controllers
@@ -11,13 +12,13 @@ namespace VideoGameCharacterApi.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<List<Models.Character>>> GetCharacters()
+        public async Task<ActionResult<List<CharacterResponse>>> GetCharacters()
         {
             return Ok(await service.GetAllCharactersAsync());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Models.Character>> GetCharacter(int id)
+        public async Task<ActionResult<CharacterResponse>> GetCharacter(int id)
         {
             try
             {
