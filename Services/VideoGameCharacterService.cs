@@ -13,6 +13,7 @@ namespace VideoGameCharacterApi.Services
         {
             return await context.Characters.Select(c => new CharacterResponse
             {
+                Id = c.Id,
                 Name = c.Name,
                 Game = c.Game,
                 Role = c.Role
@@ -35,25 +36,76 @@ namespace VideoGameCharacterApi.Services
 
             return await Task.FromResult(new CharacterResponse
             {
+                Id = character.Id,
                 Name = character.Name,
                 Game = character.Game,
                 Role = character.Role
             });
         }
 
-        public async Task<CharacterResponse> AddCharacterAsync(Character character)
+        public async Task<CharacterResponse> AddCharacterAsync(CreateCharacterRequest character)
         {
-            throw new NotImplementedException();
+            var newCharacter = new Character
+            {
+                Name = character.Name,
+                Game = character.Game,
+                Role = character.Role
+            };
+
+            context.Characters.Add(newCharacter);
+            await context.SaveChangesAsync();
+
+            return await Task.FromResult(new CharacterResponse
+            {
+                Id = newCharacter.Id,
+                Name = newCharacter.Name,
+                Game = newCharacter.Game,
+                Role = newCharacter.Role
+            });
         }
 
-        public Task<bool> UpdateCharacterAsync(int id, Character character)
+        public async Task<bool> UpdateCharacterAsync(int id, UpdateCharacterRequest character)
         {
-            throw new NotImplementedException();
+            if (id <= 0)
+            {
+                throw new ArgumentException("Id must be greater than 0", nameof(id));
+            }
+
+            var existingCharacter = await context.Characters.FindAsync(id);
+
+            if (existingCharacter == null)
+            {
+                return await Task.FromResult(false);
+            }
+
+            existingCharacter.Name = character.Name;
+            existingCharacter.Game = character.Game;
+            existingCharacter.Role = character.Role;
+
+            context.Characters.Update(existingCharacter);
+            await context.SaveChangesAsync();
+
+            return await Task.FromResult(true);
         }
 
-        public Task<bool> DeleteCharacterAsync(int id)
+        public async Task<bool> DeleteCharacterAsync(int id)
         {
-            throw new NotImplementedException();
+            if (id <= 0)
+            {
+                throw new ArgumentException("Id must be greater than 0", nameof(id));
+            }
+
+            var existingCharacter = await context.Characters.FindAsync(id);
+
+            if (existingCharacter == null)
+            {
+                return await Task.FromResult(false);
+            }
+
+            context.Characters.Remove(existingCharacter);
+            await context.SaveChangesAsync();
+
+            return await Task.FromResult(true);
         }
     }
 }

@@ -34,5 +34,41 @@ namespace VideoGameCharacterApi.Controllers
                 return NotFound(ex.Message);
             }
         }
+
+        [HttpPost]
+        public async Task<ActionResult<CharacterResponse>> AddCharacter(CreateCharacterRequest character)
+        {
+            var createdCharacter = await service.AddCharacterAsync(character);
+            return CreatedAtAction(nameof(GetCharacter), new { id = createdCharacter.Id }, createdCharacter);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCharacter(int id, UpdateCharacterRequest character)
+        {
+            if (id != character.Id)
+            {
+                return BadRequest("Id in URL does not match Id in request body");
+            }
+
+            var result = await service.UpdateCharacterAsync(id, character);
+            if (!result)
+            {
+                return NotFound($"Character with Id {id} not found");
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCharacter(int id)
+        {
+            var result = await service.DeleteCharacterAsync(id);
+            if (!result)
+            {
+                return NotFound($"Character with Id {id} not found");
+            }
+
+            return NoContent();
+        }
     }
 }
